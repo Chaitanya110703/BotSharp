@@ -7,6 +7,7 @@ using BotSharp.Abstraction.Loggers;
 using BotSharp.Abstraction.MLTasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace BotSharp.Plugin.SemanticKernel
     /// </summary>
     public class SemanticKernelChatCompletionProvider : IChatCompletion
     {
-        private Microsoft.SemanticKernel.ChatCompletion.IChatCompletionService _kernelChatCompletion;
+        private IChatCompletionService _kernelChatCompletion;
         private IServiceProvider _services;
         private ITokenStatistics _tokenStatistics;
         private string _model;
@@ -41,6 +42,7 @@ namespace BotSharp.Plugin.SemanticKernel
             this._services = services;
             this._tokenStatistics = tokenStatistics;
         }
+
         /// <inheritdoc/>
         public async Task<RoleDialogModel> GetChatCompletions(Agent agent, List<RoleDialogModel> conversations)
         {
@@ -69,7 +71,7 @@ namespace BotSharp.Plugin.SemanticKernel
                 }
             }
 
-            var ChatMessage = await completion.GetChatMessageContentsAsync(chatHistory);
+            var ChatMessage = await completion.GetChatMessageContentsAsync(chatHistory) ;
             var chatMessageContent =  ChatMessage?.FirstOrDefault();
             var response = chatMessageContent != null ? chatMessageContent.Content :string.Empty;
             var msg = new RoleDialogModel(AgentRole.Assistant, response)
